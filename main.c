@@ -6,15 +6,36 @@
 static char *input;
 static char *p;
 
+int add();
+
 void skip() {
     while (*p == ' ' || *p == '\t') {
         p++;
     }
 }
 
+void expect(char c) {
+    if (*p == c) {
+        p++;
+        return;
+    }
+    printf("expected %c, but got %c\n", c, *p);
+    exit(1);
+}
+
 int num() {
     skip();
-    int n = (*p++ - '0');
+    int n;
+
+    if (*p == '(') {
+        p++;
+        n = add();
+        expect(')');
+        skip();
+        return n;
+    }
+
+    n = (*p++ - '0');
     while (isdigit(*p)) {
         n = 10 * n + (*p++ - '0');
     }
