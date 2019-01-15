@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <math.h>
 
 static char *input;
 static char *p;
@@ -17,16 +18,21 @@ int num() {
     while (isdigit(*p)) {
         n = 10 * n + (*p++ - '0');
     }
+    skip();
     return n;
 }
 
 int mul() {
-    skip();
     int n = num();
     while (*p == '*' || *p == '/') {
         if (*p == '*') {
-            p++;
-            n = n * num();
+            if (*(p + 1) == '*') {
+                p += 2;
+                n = (int)pow(n, num());
+            } else {
+                p++;
+                n = n * num();
+            }
         }
         if (*p == '/') {
             p++;
@@ -37,7 +43,6 @@ int mul() {
 }
 
 int add() {
-    skip();
     int n = mul();
     while (*p == '+' || *p == '-') {
         if (*p == '+') {
@@ -56,6 +61,7 @@ int main() {
     printf("Howdy? toasa\n");
     printf("If you quit, press q\n");
     input = malloc(sizeof(char) * 1000);
+    p = malloc(sizeof(char) * 1000);
     int i = 0;
     char c;
     printf(">>> ");
@@ -66,7 +72,6 @@ int main() {
             c = getchar();
         }
         input[i] = '\0';
-        p = malloc(sizeof(char) * 1000);
         p = input;
         printf("%d\n", add());
         printf(">>> ");
